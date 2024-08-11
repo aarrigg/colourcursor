@@ -1,0 +1,168 @@
+<html><head><base href="https://websim.ai/mouse-color-flood-ultra-fast-rainbow-text-comic-sans-warning/"><title>Mouse Color Flood with Ultra Fast Animated Rainbow Text in Comic Sans and Warning</title>
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: none;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+#background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  z-index: -1;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(10px);
+}
+
+#text-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 72px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.rainbow-text {
+  background-image: linear-gradient(
+    to right,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8b00ff
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: rainbow-animation 0.1s linear infinite;
+}
+
+@keyframes rainbow-animation {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+#warning-container {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 14px;
+  color: #ff0000;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+</style>
+</head>
+<body>
+<div id="background"></div>
+<canvas id="canvas"></canvas>
+<div id="text-container">
+  <span class="rainbow-text">COLOUR CURSOR</span>
+</div>
+<div id="warning-container">
+  WARNING: FLASHING COLOURS MAY CAUSE DISCOMFORT!!!
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const background = document.getElementById('background');
+const textContainer = document.getElementById('text-container');
+
+let width, height;
+
+function resizeCanvas() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+  ctx.fillRect(0, 0, width, height);
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let mouseX = 0;
+let mouseY = 0;
+let targetX = 0;
+let targetY = 0;
+let isMoving = false;
+let lastMoveTime = 0;
+
+canvas.addEventListener('mousemove', (e) => {
+  targetX = e.clientX;
+  targetY = e.clientY;
+  isMoving = true;
+  lastMoveTime = Date.now();
+  textContainer.style.opacity = '1';
+});
+
+function getRandomColor() {
+  return `hsl(${Math.random() * 360}, 100%, 50%)`;
+}
+
+function lerp(start, end, t) {
+  return start * (1 - t) + end * t;
+}
+
+// Set a random background color
+background.style.background = getRandomColor();
+
+function drawColorFlood() {
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, width, height);
+
+  const currentTime = Date.now();
+  if (currentTime - lastMoveTime > 1000) {
+    isMoving = false;
+    textContainer.style.opacity = '0';
+  }
+
+  // Smooth out the mouse movement
+  mouseX = lerp(mouseX, targetX, 0.1);
+  mouseY = lerp(mouseY, targetY, 0.1);
+
+  if (isMoving) {
+    ctx.globalCompositeOperation = 'lighter';
+    const radius = 70;
+    const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, radius);
+    gradient.addColorStop(0, getRandomColor());
+    gradient.addColorStop(1, 'transparent');
+
+    ctx.beginPath();
+    ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+  }
+
+  requestAnimationFrame(drawColorFlood);
+}
+
+drawColorFlood();
+</script>
+</body></html>
